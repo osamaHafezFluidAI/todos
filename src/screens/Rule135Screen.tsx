@@ -90,15 +90,23 @@ const Rule135Screen: React.FC = () => {
 
   const getTodaysProgress = () => {
     const todaysPlan = getTodaysPlan();
-    if (!todaysPlan) return { completed: 0, total: 0 };
+    if (!todaysPlan) {
+      return { 
+        completed: 0, 
+        total: 0,
+        big: { completed: 0, total: 0 },
+        medium: { completed: 0, total: 0 },
+        small: { completed: 0, total: 0 },
+      };
+    }
 
     const bigCompleted = todaysPlan.bigTask?.completed ? 1 : 0;
-    const mediumCompleted = todaysPlan.mediumTasks.filter(t => t.completed).length;
-    const smallCompleted = todaysPlan.smallTasks.filter(t => t.completed).length;
+    const mediumCompleted = todaysPlan.mediumTasks?.filter(t => t.completed).length || 0;
+    const smallCompleted = todaysPlan.smallTasks?.filter(t => t.completed).length || 0;
     
     const bigTotal = todaysPlan.bigTask ? 1 : 0;
-    const mediumTotal = todaysPlan.mediumTasks.length;
-    const smallTotal = todaysPlan.smallTasks.length;
+    const mediumTotal = todaysPlan.mediumTasks?.length || 0;
+    const smallTotal = todaysPlan.smallTasks?.length || 0;
 
     return {
       completed: bigCompleted + mediumCompleted + smallCompleted,
@@ -214,9 +222,10 @@ const Rule135Screen: React.FC = () => {
   const todaysPlan = getTodaysPlan();
   const progress = getTodaysProgress();
 
-  const bigTasks = todaysPlan?.bigTask ? [todaysPlan.bigTask] : [];
-  const mediumTasks = todaysPlan?.mediumTasks || [];
-  const smallTasks = todaysPlan?.smallTasks || [];
+  // For demo purposes, let's use actual tasks filtered by category
+  const bigTasks = state.todos.filter(todo => !todo.completed && todo.category === 'big');
+  const mediumTasks = state.todos.filter(todo => !todo.completed && todo.category === 'medium');
+  const smallTasks = state.todos.filter(todo => !todo.completed && todo.category === 'small');
 
   const availableBig = getAvailableTasksByCategory('big');
   const availableMedium = getAvailableTasksByCategory('medium');
@@ -263,7 +272,7 @@ const Rule135Screen: React.FC = () => {
             {isToday(selectedDate) ? "Today's Progress" : `Progress for ${formatDate(selectedDate)}`}
           </Text>
           <Text style={styles.progressScore}>
-            {progress.completed}/{progress.total}
+            {progress?.completed || 0}/{progress?.total || 0}
           </Text>
         </View>
         
@@ -278,13 +287,13 @@ const Rule135Screen: React.FC = () => {
                 style={[
                   styles.progressBarFill,
                   { 
-                    width: progress.big.total > 0 ? `${(progress.big.completed / progress.big.total) * 100}%` : '0%',
+                    width: (progress?.big?.total || 0) > 0 ? `${((progress?.big?.completed || 0) / (progress?.big?.total || 1)) * 100}%` : '0%',
                     backgroundColor: '#FF3B30'
                   }
                 ]}
               />
             </View>
-            <Text style={styles.progressBarCount}>{progress.big.completed}/1</Text>
+            <Text style={styles.progressBarCount}>{progress?.big?.completed || 0}/1</Text>
           </View>
 
           <View style={styles.progressBar}>
@@ -297,13 +306,13 @@ const Rule135Screen: React.FC = () => {
                 style={[
                   styles.progressBarFill,
                   { 
-                    width: progress.medium.total > 0 ? `${(progress.medium.completed / progress.medium.total) * 100}%` : '0%',
+                    width: (progress?.medium?.total || 0) > 0 ? `${((progress?.medium?.completed || 0) / (progress?.medium?.total || 1)) * 100}%` : '0%',
                     backgroundColor: '#FF9500'
                   }
                 ]}
               />
             </View>
-            <Text style={styles.progressBarCount}>{progress.medium.completed}/3</Text>
+            <Text style={styles.progressBarCount}>{progress?.medium?.completed || 0}/3</Text>
           </View>
 
           <View style={styles.progressBar}>
@@ -316,13 +325,13 @@ const Rule135Screen: React.FC = () => {
                 style={[
                   styles.progressBarFill,
                   { 
-                    width: progress.small.total > 0 ? `${(progress.small.completed / progress.small.total) * 100}%` : '0%',
+                    width: (progress?.small?.total || 0) > 0 ? `${((progress?.small?.completed || 0) / (progress?.small?.total || 1)) * 100}%` : '0%',
                     backgroundColor: '#34C759'
                   }
                 ]}
               />
             </View>
-            <Text style={styles.progressBarCount}>{progress.small.completed}/5</Text>
+            <Text style={styles.progressBarCount}>{progress?.small?.completed || 0}/5</Text>
           </View>
         </View>
       </View>
