@@ -12,11 +12,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTodos } from '../contexts/TodoContext';
+import { useTheme } from '../contexts/ThemeContext';
 import TodoItem from '../components/TodoItem';
 import { Todo, Priority, TaskCategory, TaskStatus } from '../types';
 
 const ListScreen: React.FC = () => {
   const { state, addTodo, updateTodo, deleteTodo } = useTodos();
+  const { colors } = useTheme();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
@@ -102,31 +104,31 @@ const ListScreen: React.FC = () => {
   const filteredTodos = getFilteredAndSortedTodos();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Filter and Sort Controls */}
-      <View style={styles.controls}>
+      <View style={[styles.controls, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
           <TouchableOpacity
-            style={[styles.filterButton, filterBy === 'all' && styles.activeFilter]}
+            style={[styles.filterButton, { backgroundColor: filterBy === 'all' ? colors.primary : colors.background }, filterBy === 'all' && styles.activeFilter]}
             onPress={() => setFilterBy('all')}
           >
-            <Text style={[styles.filterText, filterBy === 'all' && styles.activeFilterText]}>
+            <Text style={[styles.filterText, { color: filterBy === 'all' ? '#fff' : colors.textSecondary }, filterBy === 'all' && styles.activeFilterText]}>
               All ({state.todos.length})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.filterButton, filterBy === 'pending' && styles.activeFilter]}
+            style={[styles.filterButton, { backgroundColor: filterBy === 'pending' ? colors.primary : colors.background }, filterBy === 'pending' && styles.activeFilter]}
             onPress={() => setFilterBy('pending')}
           >
-            <Text style={[styles.filterText, filterBy === 'pending' && styles.activeFilterText]}>
+            <Text style={[styles.filterText, { color: filterBy === 'pending' ? '#fff' : colors.textSecondary }, filterBy === 'pending' && styles.activeFilterText]}>
               Pending ({state.todos.filter(t => !t.completed).length})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.filterButton, filterBy === 'completed' && styles.activeFilter]}
+            style={[styles.filterButton, { backgroundColor: filterBy === 'completed' ? colors.primary : colors.background }, filterBy === 'completed' && styles.activeFilter]}
             onPress={() => setFilterBy('completed')}
           >
-            <Text style={[styles.filterText, filterBy === 'completed' && styles.activeFilterText]}>
+            <Text style={[styles.filterText, { color: filterBy === 'completed' ? '#fff' : colors.textSecondary }, filterBy === 'completed' && styles.activeFilterText]}>
               Done ({state.todos.filter(t => t.completed).length})
             </Text>
           </TouchableOpacity>
@@ -140,8 +142,8 @@ const ListScreen: React.FC = () => {
             setSortBy(sorts[(currentIndex + 1) % sorts.length]);
           }}
         >
-          <Ionicons name="funnel-outline" size={20} color="#007AFF" />
-          <Text style={styles.sortText}>
+          <Ionicons name="funnel-outline" size={20} color={colors.primary} />
+          <Text style={[styles.sortText, { color: colors.primary }]}>
             {sortBy === 'created' ? 'Date' : sortBy === 'priority' ? 'Priority' : 'Category'}
           </Text>
         </TouchableOpacity>
@@ -156,9 +158,9 @@ const ListScreen: React.FC = () => {
         contentContainerStyle={filteredTodos.length === 0 ? styles.emptyContainer : undefined}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Ionicons name="checkmark-circle-outline" size={64} color="#8E8E93" />
-            <Text style={styles.emptyTitle}>No tasks found</Text>
-            <Text style={styles.emptySubtitle}>
+            <Ionicons name="checkmark-circle-outline" size={64} color={colors.textSecondary} />
+            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No tasks found</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
               {filterBy === 'all'
                 ? 'Add your first task to get started'
                 : filterBy === 'pending'
@@ -170,47 +172,50 @@ const ListScreen: React.FC = () => {
       />
 
       {/* Add Button */}
-      <TouchableOpacity style={styles.addButton} onPress={() => setShowAddModal(true)}>
+      <TouchableOpacity style={[styles.addButton, { backgroundColor: colors.primary }]} onPress={() => setShowAddModal(true)}>
         <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
 
       {/* Add Todo Modal */}
       <Modal visible={showAddModal} animationType="slide" presentationStyle="pageSheet">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+        <View style={[styles.modalContainer, { backgroundColor: colors.surface }]}>
+          <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <Text style={styles.cancelButton}>Cancel</Text>
+              <Text style={[styles.cancelButton, { color: colors.textSecondary }]}>Cancel</Text>
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>Add New Task</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Add New Task</Text>
             <TouchableOpacity onPress={handleAddTodo}>
-              <Text style={styles.saveButton}>Add</Text>
+              <Text style={[styles.saveButton, { color: colors.primary }]}>Add</Text>
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.modalContent}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surface }]}
               value={newTitle}
               onChangeText={setNewTitle}
               placeholder="Task title"
+              placeholderTextColor={colors.textSecondary}
               autoFocus
             />
 
             <TextInput
-              style={[styles.input, styles.descriptionInput]}
+              style={[styles.input, styles.descriptionInput, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surface }]}
               value={newDescription}
               onChangeText={setNewDescription}
               placeholder="Description (optional)"
+              placeholderTextColor={colors.textSecondary}
               multiline
             />
 
-            <Text style={styles.sectionTitle}>Priority</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Priority</Text>
             <View style={styles.optionRow}>
               {(['low', 'medium', 'high'] as Priority[]).map(priority => (
                 <TouchableOpacity
                   key={priority}
                   style={[
                     styles.optionButton,
+                    { borderColor: colors.border, backgroundColor: newPriority === priority ? colors.primary : colors.surface },
                     newPriority === priority && styles.selectedOption,
                   ]}
                   onPress={() => setNewPriority(priority)}
@@ -218,6 +223,7 @@ const ListScreen: React.FC = () => {
                   <Text
                     style={[
                       styles.optionText,
+                      { color: newPriority === priority ? '#fff' : colors.text },
                       newPriority === priority && styles.selectedOptionText,
                     ]}
                   >
@@ -227,13 +233,14 @@ const ListScreen: React.FC = () => {
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>Size (for 1-3-5 Rule)</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Size (for 1-3-5 Rule)</Text>
             <View style={styles.optionRow}>
               {(['small', 'medium', 'big'] as TaskCategory[]).map(category => (
                 <TouchableOpacity
                   key={category}
                   style={[
                     styles.optionButton,
+                    { borderColor: colors.border, backgroundColor: newCategory === category ? colors.primary : colors.surface },
                     newCategory === category && styles.selectedOption,
                   ]}
                   onPress={() => setNewCategory(category)}
@@ -241,6 +248,7 @@ const ListScreen: React.FC = () => {
                   <Text
                     style={[
                       styles.optionText,
+                      { color: newCategory === category ? '#fff' : colors.text },
                       newCategory === category && styles.selectedOptionText,
                     ]}
                   >
@@ -250,30 +258,30 @@ const ListScreen: React.FC = () => {
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>Eisenhower Matrix</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Eisenhower Matrix</Text>
             <View style={styles.matrixOptions}>
               <TouchableOpacity
-                style={[styles.matrixOption, newUrgent && styles.selectedMatrixOption]}
+                style={[styles.matrixOption, { borderColor: newUrgent ? colors.primary : colors.border, backgroundColor: newUrgent ? colors.background : colors.surface }, newUrgent && styles.selectedMatrixOption]}
                 onPress={() => setNewUrgent(!newUrgent)}
               >
                 <Ionicons
                   name={newUrgent ? 'checkmark-circle' : 'ellipse-outline'}
                   size={24}
-                  color={newUrgent ? '#007AFF' : '#8E8E93'}
+                  color={newUrgent ? colors.primary : colors.textSecondary}
                 />
-                <Text style={styles.matrixOptionText}>Urgent</Text>
+                <Text style={[styles.matrixOptionText, { color: colors.text }]}>Urgent</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.matrixOption, newImportant && styles.selectedMatrixOption]}
+                style={[styles.matrixOption, { borderColor: newImportant ? colors.primary : colors.border, backgroundColor: newImportant ? colors.background : colors.surface }, newImportant && styles.selectedMatrixOption]}
                 onPress={() => setNewImportant(!newImportant)}
               >
                 <Ionicons
                   name={newImportant ? 'checkmark-circle' : 'ellipse-outline'}
                   size={24}
-                  color={newImportant ? '#007AFF' : '#8E8E93'}
+                  color={newImportant ? colors.primary : colors.textSecondary}
                 />
-                <Text style={styles.matrixOptionText}>Important</Text>
+                <Text style={[styles.matrixOptionText, { color: colors.text }]}>Important</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
