@@ -2,7 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 import { ViewType } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Import screens (we'll create these next)
 import ListScreen from '../screens/ListScreen';
@@ -13,20 +15,36 @@ import Rule135Screen from '../screens/Rule135Screen';
 const Drawer = createDrawerNavigator();
 
 const Navigation: React.FC = () => {
+  const { theme, colors, toggleTheme } = useTheme();
+
+  const ThemeToggleButton = () => (
+    <TouchableOpacity onPress={toggleTheme} style={{ marginRight: 15 }}>
+      <Ionicons 
+        name={theme === 'light' ? 'moon' : 'sunny'} 
+        size={24} 
+        color={colors.headerText} 
+      />
+    </TouchableOpacity>
+  );
+
   return (
     <NavigationContainer>
       <Drawer.Navigator
         screenOptions={{
           drawerPosition: 'right',
           headerStyle: {
-            backgroundColor: '#007AFF',
+            backgroundColor: colors.headerBackground,
           },
-          headerTintColor: '#fff',
+          headerTintColor: colors.headerText,
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-          drawerActiveTintColor: '#007AFF',
-          drawerInactiveTintColor: 'gray',
+          headerRight: () => <ThemeToggleButton />,
+          drawerStyle: {
+            backgroundColor: colors.surface,
+          },
+          drawerActiveTintColor: colors.primary,
+          drawerInactiveTintColor: colors.textSecondary,
           drawerLabelStyle: {
             marginLeft: -16,
           },

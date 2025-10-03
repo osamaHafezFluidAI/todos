@@ -9,6 +9,7 @@ import {
   Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
 import { Todo, Priority, TaskCategory, TaskStatus } from '../types';
 
 interface TodoItemProps {
@@ -28,6 +29,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   showStatus = false,
   compact = false,
 }) => {
+  const { colors } = useTheme();
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
   const [editDescription, setEditDescription] = useState(todo.description || '');
@@ -85,12 +87,12 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   return (
     <>
-      <View style={[styles.container, compact && styles.compact]}>
+      <View style={[styles.container, { backgroundColor: colors.surface, borderBottomColor: colors.border }, compact && styles.compact]}>
         <TouchableOpacity onPress={toggleCompleted} style={styles.checkboxContainer}>
           <Ionicons
             name={todo.completed ? 'checkmark-circle' : 'ellipse-outline'}
             size={24}
-            color={todo.completed ? '#34C759' : '#8E8E93'}
+            color={todo.completed ? '#34C759' : colors.textSecondary}
           />
         </TouchableOpacity>
 
@@ -98,6 +100,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
           <Text
             style={[
               styles.title,
+              { color: colors.text },
               todo.completed && styles.completedText,
               compact && styles.compactTitle,
             ]}
@@ -106,7 +109,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
           </Text>
 
           {!compact && todo.description && (
-            <Text style={[styles.description, todo.completed && styles.completedText]}>
+            <Text style={[styles.description, { color: colors.textSecondary }, todo.completed && styles.completedText]}>
               {todo.description}
             </Text>
           )}
@@ -123,9 +126,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
                 <Ionicons
                   name={getCategoryIcon(todo.category)}
                   size={16}
-                  color="#8E8E93"
+                  color={colors.textSecondary}
                 />
-                <Text style={styles.categoryText}>{todo.category}</Text>
+                <Text style={[styles.categoryText, { color: colors.textSecondary }]}>{todo.category}</Text>
               </View>
             )}
 
@@ -148,7 +151,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
         <View style={styles.actions}>
           <TouchableOpacity onPress={() => setShowEditModal(true)} style={styles.actionButton}>
-            <Ionicons name="create-outline" size={20} color="#007AFF" />
+            <Ionicons name="create-outline" size={20} color={colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
             <Ionicons name="trash-outline" size={20} color="#FF3B30" />
@@ -161,30 +164,32 @@ const TodoItem: React.FC<TodoItemProps> = ({
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+        <View style={[styles.modalContainer, { backgroundColor: colors.surface }]}>
+          <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
             <TouchableOpacity onPress={() => setShowEditModal(false)}>
-              <Text style={styles.cancelButton}>Cancel</Text>
+              <Text style={[styles.cancelButton, { color: colors.textSecondary }]}>Cancel</Text>
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>Edit Task</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Edit Task</Text>
             <TouchableOpacity onPress={handleSaveEdit}>
-              <Text style={styles.saveButton}>Save</Text>
+              <Text style={[styles.saveButton, { color: colors.primary }]}>Save</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.modalContent}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surface }]}
               value={editTitle}
               onChangeText={setEditTitle}
               placeholder="Task title"
+              placeholderTextColor={colors.textSecondary}
               multiline
             />
             <TextInput
-              style={[styles.input, styles.descriptionInput]}
+              style={[styles.input, styles.descriptionInput, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surface }]}
               value={editDescription}
               onChangeText={setEditDescription}
               placeholder="Description (optional)"
+              placeholderTextColor={colors.textSecondary}
               multiline
             />
           </View>
