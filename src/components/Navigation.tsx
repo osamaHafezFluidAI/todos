@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { ViewType } from '../types';
@@ -12,43 +12,26 @@ import KanbanScreen from '../screens/KanbanScreen';
 import MatrixScreen from '../screens/MatrixScreen';
 import Rule135Screen from '../screens/Rule135Screen';
 
-const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 const Navigation: React.FC = () => {
   const { theme, colors, toggleTheme } = useTheme();
 
+  const ThemeToggleButton = () => (
+    <TouchableOpacity onPress={toggleTheme} style={{ marginRight: 15 }}>
+      <Ionicons 
+        name={theme === 'light' ? 'moon' : 'sunny'} 
+        size={24} 
+        color={colors.headerText} 
+      />
+    </TouchableOpacity>
+  );
+
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: keyof typeof Ionicons.glyphMap;
-
-            switch (route.name) {
-              case 'List':
-                iconName = focused ? 'list' : 'list-outline';
-                break;
-              case 'Kanban':
-                iconName = focused ? 'grid' : 'grid-outline';
-                break;
-              case 'Matrix':
-                iconName = focused ? 'analytics' : 'analytics-outline';
-                break;
-              case '1-3-5 Rule':
-                iconName = focused ? 'calendar' : 'calendar-outline';
-                break;
-              default:
-                iconName = 'list';
-            }
-
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: colors.tabBarActive,
-          tabBarInactiveTintColor: colors.tabBarInactive,
-          tabBarStyle: {
-            backgroundColor: colors.surface,
-            borderTopColor: colors.border,
-          },
+      <Drawer.Navigator
+        screenOptions={{
+          drawerPosition: 'right',
           headerStyle: {
             backgroundColor: colors.headerBackground,
           },
@@ -56,41 +39,58 @@ const Navigation: React.FC = () => {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={toggleTheme}
-              style={{ marginRight: 16 }}
-            >
-              <Ionicons
-                name={theme === 'light' ? 'moon' : 'sunny'}
-                size={24}
-                color={colors.headerText}
-              />
-            </TouchableOpacity>
-          ),
-        })}
+          headerRight: () => <ThemeToggleButton />,
+          drawerStyle: {
+            backgroundColor: colors.surface,
+          },
+          drawerActiveTintColor: colors.primary,
+          drawerInactiveTintColor: colors.textSecondary,
+          drawerLabelStyle: {
+            marginLeft: -16,
+          },
+        }}
       >
-        <Tab.Screen 
+        <Drawer.Screen 
           name="List" 
           component={ListScreen}
-          options={{ title: 'Todo List' }}
+          options={{ 
+            title: 'Todo List',
+            drawerIcon: ({ focused, color, size }) => (
+              <Ionicons name={focused ? 'list' : 'list-outline'} size={size} color={color} />
+            ),
+          }}
         />
-        <Tab.Screen 
+        <Drawer.Screen 
           name="Kanban" 
           component={KanbanScreen}
-          options={{ title: 'Kanban Board' }}
+          options={{ 
+            title: 'Kanban Board',
+            drawerIcon: ({ focused, color, size }) => (
+              <Ionicons name={focused ? 'grid' : 'grid-outline'} size={size} color={color} />
+            ),
+          }}
         />
-        <Tab.Screen 
+        <Drawer.Screen 
           name="Matrix" 
           component={MatrixScreen}
-          options={{ title: 'Priority Matrix' }}
+          options={{ 
+            title: 'Priority Matrix',
+            drawerIcon: ({ focused, color, size }) => (
+              <Ionicons name={focused ? 'analytics' : 'analytics-outline'} size={size} color={color} />
+            ),
+          }}
         />
-        <Tab.Screen 
+        <Drawer.Screen 
           name="1-3-5 Rule" 
           component={Rule135Screen}
-          options={{ title: '1-3-5 Rule' }}
+          options={{ 
+            title: '1-3-5 Rule',
+            drawerIcon: ({ focused, color, size }) => (
+              <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={size} color={color} />
+            ),
+          }}
         />
-      </Tab.Navigator>
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 };
