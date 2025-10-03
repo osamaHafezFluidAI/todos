@@ -2,7 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 import { ViewType } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Import screens (we'll create these next)
 import ListScreen from '../screens/ListScreen';
@@ -13,6 +15,8 @@ import Rule135Screen from '../screens/Rule135Screen';
 const Tab = createBottomTabNavigator();
 
 const Navigation: React.FC = () => {
+  const { theme, colors, toggleTheme } = useTheme();
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -39,15 +43,31 @@ const Navigation: React.FC = () => {
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#007AFF',
-          tabBarInactiveTintColor: 'gray',
-          headerStyle: {
-            backgroundColor: '#007AFF',
+          tabBarActiveTintColor: colors.tabBarActive,
+          tabBarInactiveTintColor: colors.tabBarInactive,
+          tabBarStyle: {
+            backgroundColor: colors.surface,
+            borderTopColor: colors.border,
           },
-          headerTintColor: '#fff',
+          headerStyle: {
+            backgroundColor: colors.headerBackground,
+          },
+          headerTintColor: colors.headerText,
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={toggleTheme}
+              style={{ marginRight: 16 }}
+            >
+              <Ionicons
+                name={theme === 'light' ? 'moon' : 'sunny'}
+                size={24}
+                color={colors.headerText}
+              />
+            </TouchableOpacity>
+          ),
         })}
       >
         <Tab.Screen 

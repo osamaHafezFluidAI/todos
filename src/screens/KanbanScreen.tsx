@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTodos } from '../contexts/TodoContext';
+import { useTheme } from '../contexts/ThemeContext';
 import TodoItem from '../components/TodoItem';
 import { Todo, TaskStatus } from '../types';
 
 const KanbanScreen: React.FC = () => {
   const { state, updateTodo, deleteTodo } = useTodos();
+  const { colors } = useTheme();
 
   const getTasksByStatus = (status: TaskStatus) => {
     return state.todos.filter(todo => todo.status === status && !todo.completed);
@@ -58,7 +60,7 @@ const KanbanScreen: React.FC = () => {
     todos: Todo[];
     color: string;
   }> = ({ title, status, todos, color }) => (
-    <View style={styles.column}>
+    <View style={[styles.column, { backgroundColor: colors.surface }]}>
       <View style={[styles.columnHeader, { backgroundColor: color }]}>
         <Text style={styles.columnTitle}>{title}</Text>
         <View style={styles.countBadge}>
@@ -75,27 +77,27 @@ const KanbanScreen: React.FC = () => {
                 status === 'in-progress' ? 'time-outline' : 'checkmark-circle-outline'
               } 
               size={32} 
-              color="#8E8E93" 
+              color={colors.textSecondary} 
             />
-            <Text style={styles.emptyText}>No tasks</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No tasks</Text>
           </View>
         ) : (
           todos.map(todo => (
-            <View key={todo.id} style={styles.kanbanCard}>
+            <View key={todo.id} style={[styles.kanbanCard, { backgroundColor: colors.background, borderColor: colors.border }]}>
               <TouchableOpacity
                 onLongPress={() => handleStatusChange(todo)}
                 style={styles.cardContent}
               >
-                <Text style={styles.cardTitle}>{todo.title}</Text>
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{todo.title}</Text>
                 {todo.description && (
-                  <Text style={styles.cardDescription} numberOfLines={2}>
+                  <Text style={[styles.cardDescription, { color: colors.textSecondary }]} numberOfLines={2}>
                     {todo.description}
                   </Text>
                 )}
                 
                 <View style={styles.cardMetadata}>
                   <View style={[styles.priorityIndicator, { backgroundColor: getPriorityColor(todo.priority) }]} />
-                  <Text style={styles.categoryText}>{todo.category}</Text>
+                  <Text style={[styles.categoryText, { color: colors.textSecondary }]}>{todo.category}</Text>
                   
                   {(todo.urgent || todo.important) && (
                     <View style={styles.matrixIndicator}>
@@ -111,7 +113,7 @@ const KanbanScreen: React.FC = () => {
                   onPress={() => handleStatusChange(todo)}
                   style={styles.moveButton}
                 >
-                  <Ionicons name="arrow-forward-outline" size={16} color="#007AFF" />
+                  <Ionicons name="arrow-forward-outline" size={16} color={colors.primary} />
                 </TouchableOpacity>
                 
                 <TouchableOpacity
@@ -152,7 +154,7 @@ const KanbanScreen: React.FC = () => {
   const completedTasks = getCompletedTasks();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView 
         horizontal 
         style={styles.kanbanBoard}
@@ -183,20 +185,20 @@ const KanbanScreen: React.FC = () => {
 
       {/* Completed Tasks Section */}
       {completedTasks.length > 0 && (
-        <View style={styles.completedSection}>
+        <View style={[styles.completedSection, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
           <TouchableOpacity style={styles.completedHeader}>
             <Ionicons name="checkmark-circle" size={20} color="#34C759" />
             <Text style={styles.completedTitle}>
               Completed Tasks ({completedTasks.length})
             </Text>
-            <Ionicons name="chevron-down-outline" size={20} color="#8E8E93" />
+            <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
       )}
 
       {/* Help Text */}
-      <View style={styles.helpSection}>
-        <Text style={styles.helpText}>
+      <View style={[styles.helpSection, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+        <Text style={[styles.helpText, { color: colors.textSecondary }]}>
           💡 Long press any task to move it between columns
         </Text>
       </View>

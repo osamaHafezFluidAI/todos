@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTodos } from '../contexts/TodoContext';
+import { useTheme } from '../contexts/ThemeContext';
 import TodoItem from '../components/TodoItem';
 import { Todo } from '../types';
 
 const MatrixScreen: React.FC = () => {
   const { state, updateTodo, deleteTodo } = useTodos();
+  const { colors } = useTheme();
   const [expandedQuadrant, setExpandedQuadrant] = useState<string | null>(null);
 
   // Eisenhower Matrix Quadrants
@@ -58,7 +60,7 @@ const MatrixScreen: React.FC = () => {
     const isExpanded = expandedQuadrant === quadrantKey;
     
     return (
-      <View style={[styles.quadrant, { borderColor: color }]}>
+      <View style={[styles.quadrant, { borderColor: color, backgroundColor: colors.surface }]}>
         <TouchableOpacity
           style={[styles.quadrantHeader, { backgroundColor: color }]}
           onPress={() => setExpandedQuadrant(isExpanded ? null : quadrantKey)}
@@ -86,9 +88,9 @@ const MatrixScreen: React.FC = () => {
           <View style={styles.quadrantContent}>
             {todos.length === 0 ? (
               <View style={styles.emptyQuadrant}>
-                <Ionicons name="checkmark-circle-outline" size={32} color="#8E8E93" />
-                <Text style={styles.emptyText}>No tasks in this quadrant</Text>
-                <Text style={styles.emptySubtext}>
+                <Ionicons name="checkmark-circle-outline" size={32} color={colors.textSecondary} />
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No tasks in this quadrant</Text>
+                <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
                   {quadrantKey === 'doFirst' && 'Handle urgent and important tasks here'}
                   {quadrantKey === 'schedule' && 'Plan important but not urgent tasks'}
                   {quadrantKey === 'delegate' && 'Urgent tasks that others can handle'}
@@ -97,19 +99,19 @@ const MatrixScreen: React.FC = () => {
               </View>
             ) : (
               todos.map(todo => (
-                <View key={todo.id} style={styles.matrixTodoItem}>
+                <View key={todo.id} style={[styles.matrixTodoItem, { backgroundColor: colors.background, borderColor: colors.border }]}>
                   <TouchableOpacity
                     onLongPress={() => handleQuadrantChange(todo)}
                     style={styles.todoContent}
                   >
                     <View style={styles.todoHeader}>
-                      <Text style={styles.todoTitle}>{todo.title}</Text>
+                      <Text style={[styles.todoTitle, { color: colors.text }]}>{todo.title}</Text>
                       <View style={styles.todoActions}>
                         <TouchableOpacity
                           onPress={() => handleQuadrantChange(todo)}
                           style={styles.moveButton}
                         >
-                          <Ionicons name="swap-horizontal-outline" size={16} color="#007AFF" />
+                          <Ionicons name="swap-horizontal-outline" size={16} color={colors.primary} />
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => updateTodo({ ...todo, completed: true })}
@@ -121,7 +123,7 @@ const MatrixScreen: React.FC = () => {
                     </View>
                     
                     {todo.description && (
-                      <Text style={styles.todoDescription} numberOfLines={2}>
+                      <Text style={[styles.todoDescription, { color: colors.textSecondary }]} numberOfLines={2}>
                         {todo.description}
                       </Text>
                     )}
@@ -130,8 +132,8 @@ const MatrixScreen: React.FC = () => {
                       <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(todo.priority) }]}>
                         <Text style={styles.badgeText}>{todo.priority.toUpperCase()}</Text>
                       </View>
-                      <Text style={styles.categoryText}>{todo.category}</Text>
-                      <Text style={styles.statusText}>{todo.status.replace('-', ' ')}</Text>
+                      <Text style={[styles.categoryText, { color: colors.textSecondary }]}>{todo.category}</Text>
+                      <Text style={[styles.statusText, { color: colors.textSecondary }]}>{todo.status.replace('-', ' ')}</Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -167,18 +169,18 @@ const MatrixScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={styles.scrollContent}>
       {/* Matrix Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Eisenhower Priority Matrix</Text>
-        <Text style={styles.headerSubtitle}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Eisenhower Priority Matrix</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
           Organize tasks by urgency and importance
         </Text>
       </View>
 
       {/* Recommendation */}
-      <View style={styles.recommendationCard}>
-        <Text style={styles.recommendationText}>{getRecommendation()}</Text>
+      <View style={[styles.recommendationCard, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.recommendationText, { color: colors.text }]}>{getRecommendation()}</Text>
       </View>
 
       {/* Matrix Grid */}
@@ -221,13 +223,13 @@ const MatrixScreen: React.FC = () => {
       </View>
 
       {/* Help Section */}
-      <View style={styles.helpSection}>
-        <Text style={styles.helpTitle}>How to use the Matrix:</Text>
-        <Text style={styles.helpItem}>• <Text style={styles.helpBold}>Do First:</Text> Crisis, emergencies, deadline-driven tasks</Text>
-        <Text style={styles.helpItem}>• <Text style={styles.helpBold}>Schedule:</Text> Prevention, planning, personal development</Text>
-        <Text style={styles.helpItem}>• <Text style={styles.helpBold}>Delegate:</Text> Interruptions, some meetings, some emails</Text>
-        <Text style={styles.helpItem}>• <Text style={styles.helpBold}>Eliminate:</Text> Time wasters, excessive social media, trivial activities</Text>
-        <Text style={styles.helpFooter}>💡 Long press any task to move it between quadrants</Text>
+      <View style={[styles.helpSection, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.helpTitle, { color: colors.text }]}>How to use the Matrix:</Text>
+        <Text style={[styles.helpItem, { color: colors.textSecondary }]}>• <Text style={[styles.helpBold, { color: colors.text }]}>Do First:</Text> Crisis, emergencies, deadline-driven tasks</Text>
+        <Text style={[styles.helpItem, { color: colors.textSecondary }]}>• <Text style={[styles.helpBold, { color: colors.text }]}>Schedule:</Text> Prevention, planning, personal development</Text>
+        <Text style={[styles.helpItem, { color: colors.textSecondary }]}>• <Text style={[styles.helpBold, { color: colors.text }]}>Delegate:</Text> Interruptions, some meetings, some emails</Text>
+        <Text style={[styles.helpItem, { color: colors.textSecondary }]}>• <Text style={[styles.helpBold, { color: colors.text }]}>Eliminate:</Text> Time wasters, excessive social media, trivial activities</Text>
+        <Text style={[styles.helpFooter, { color: colors.textSecondary }]}>💡 Long press any task to move it between quadrants</Text>
       </View>
     </ScrollView>
   );

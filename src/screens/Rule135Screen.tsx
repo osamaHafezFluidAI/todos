@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTodos } from '../contexts/TodoContext';
+import { useTheme } from '../contexts/ThemeContext';
 import TodoItem from '../components/TodoItem';
 import { Todo, DailyPlan } from '../types';
 
 const Rule135Screen: React.FC = () => {
   const { state, updateTodo, deleteTodo, generateWeekPlan } = useTodos();
+  const { colors } = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState<Date[]>([]);
 
@@ -130,7 +132,7 @@ const Rule135Screen: React.FC = () => {
     const [expanded, setExpanded] = useState(true);
     
     return (
-      <View style={[styles.section, { borderLeftColor: color }]}>
+      <View style={[styles.section, { borderLeftColor: color, backgroundColor: colors.surface }]}>
         <TouchableOpacity
           style={styles.sectionHeader}
           onPress={() => setExpanded(!expanded)}
@@ -138,8 +140,8 @@ const Rule135Screen: React.FC = () => {
           <View style={styles.headerLeft}>
             <Ionicons name={icon as any} size={24} color={color} />
             <View style={styles.headerText}>
-              <Text style={styles.sectionTitle}>{title}</Text>
-              <Text style={styles.sectionDescription}>{description}</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
+              <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>{description}</Text>
             </View>
           </View>
           <View style={styles.headerRight}>
@@ -149,7 +151,7 @@ const Rule135Screen: React.FC = () => {
             <Ionicons
               name={expanded ? 'chevron-up' : 'chevron-down'}
               size={20}
-              color="#8E8E93"
+              color={colors.textSecondary}
             />
           </View>
         </TouchableOpacity>
@@ -177,19 +179,19 @@ const Rule135Screen: React.FC = () => {
             {/* Add Task Options */}
             {currentTasks.length < maxTasks && availableTasks.length > 0 && (
               <View style={styles.availableTasks}>
-                <Text style={styles.availableTitle}>Available {category} tasks:</Text>
+                <Text style={[styles.availableTitle, { color: colors.textSecondary }]}>Available {category} tasks:</Text>
                 {availableTasks.slice(0, 3).map(todo => (
                   <TouchableOpacity
                     key={todo.id}
-                    style={styles.availableTask}
+                    style={[styles.availableTask, { backgroundColor: colors.background, borderColor: colors.border }]}
                     onPress={() => assignTask(todo, category)}
                   >
-                    <Text style={styles.availableTaskTitle}>{todo.title}</Text>
+                    <Text style={[styles.availableTaskTitle, { color: colors.text }]}>{todo.title}</Text>
                     <Ionicons name="add-circle-outline" size={20} color={color} />
                   </TouchableOpacity>
                 ))}
                 {availableTasks.length > 3 && (
-                  <Text style={styles.moreAvailable}>
+                  <Text style={[styles.moreAvailable, { color: colors.textSecondary }]}>
                     +{availableTasks.length - 3} more available
                   </Text>
                 )}
@@ -199,7 +201,7 @@ const Rule135Screen: React.FC = () => {
             {/* Empty State */}
             {currentTasks.length === 0 && availableTasks.length === 0 && (
               <View style={styles.emptySection}>
-                <Text style={styles.emptyText}>
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                   No {category} tasks available. Create some tasks first!
                 </Text>
               </View>
@@ -232,11 +234,11 @@ const Rule135Screen: React.FC = () => {
   const availableSmall = getAvailableTasksByCategory('small');
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={styles.scrollContent}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>1-3-5 Rule</Text>
-        <Text style={styles.headerSubtitle}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>1-3-5 Rule</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
           Focus on 1 big, 3 medium, and 5 small tasks per day
         </Text>
       </View>
@@ -248,6 +250,7 @@ const Rule135Screen: React.FC = () => {
             key={index}
             style={[
               styles.dayButton,
+              { backgroundColor: selectedDate.toDateString() === date.toDateString() ? colors.primary : colors.surface },
               selectedDate.toDateString() === date.toDateString() && styles.selectedDay,
               isToday(date) && styles.todayButton,
             ]}
@@ -255,6 +258,7 @@ const Rule135Screen: React.FC = () => {
           >
             <Text style={[
               styles.dayText,
+              { color: selectedDate.toDateString() === date.toDateString() ? '#fff' : colors.text },
               selectedDate.toDateString() === date.toDateString() && styles.selectedDayText,
               isToday(date) && styles.todayText,
             ]}>
@@ -266,12 +270,12 @@ const Rule135Screen: React.FC = () => {
       </ScrollView>
 
       {/* Progress Overview */}
-      <View style={styles.progressCard}>
+      <View style={[styles.progressCard, { backgroundColor: colors.surface }]}>
         <View style={styles.progressHeader}>
-          <Text style={styles.progressTitle}>
+          <Text style={[styles.progressTitle, { color: colors.text }]}>
             {isToday(selectedDate) ? "Today's Progress" : `Progress for ${formatDate(selectedDate)}`}
           </Text>
-          <Text style={styles.progressScore}>
+          <Text style={[styles.progressScore, { color: colors.primary }]}>
             {progress?.completed || 0}/{progress?.total || 0}
           </Text>
         </View>
@@ -372,7 +376,7 @@ const Rule135Screen: React.FC = () => {
 
       {/* Regenerate Plan Button */}
       <TouchableOpacity
-        style={styles.regenerateButton}
+        style={[styles.regenerateButton, { backgroundColor: colors.surface }]}
         onPress={() => {
           Alert.alert(
             'Regenerate Week Plan',
@@ -384,18 +388,18 @@ const Rule135Screen: React.FC = () => {
           );
         }}
       >
-        <Ionicons name="refresh" size={20} color="#007AFF" />
-        <Text style={styles.regenerateText}>Regenerate Week Plan</Text>
+        <Ionicons name="refresh" size={20} color={colors.primary} />
+        <Text style={[styles.regenerateText, { color: colors.primary }]}>Regenerate Week Plan</Text>
       </TouchableOpacity>
 
       {/* Tips */}
-      <View style={styles.tipsCard}>
-        <Text style={styles.tipsTitle}>💡 1-3-5 Rule Tips:</Text>
-        <Text style={styles.tipItem}>• Choose 1 big task that will make the biggest impact</Text>
-        <Text style={styles.tipItem}>• Pick 3 medium tasks that support your goals</Text>
-        <Text style={styles.tipItem}>• Select 5 small tasks for quick wins and maintenance</Text>
-        <Text style={styles.tipItem}>• Complete tasks in order: big → medium → small</Text>
-        <Text style={styles.tipItem}>• Don't exceed the limits - it defeats the purpose!</Text>
+      <View style={[styles.tipsCard, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.tipsTitle, { color: colors.text }]}>💡 1-3-5 Rule Tips:</Text>
+        <Text style={[styles.tipItem, { color: colors.textSecondary }]}>• Choose 1 big task that will make the biggest impact</Text>
+        <Text style={[styles.tipItem, { color: colors.textSecondary }]}>• Pick 3 medium tasks that support your goals</Text>
+        <Text style={[styles.tipItem, { color: colors.textSecondary }]}>• Select 5 small tasks for quick wins and maintenance</Text>
+        <Text style={[styles.tipItem, { color: colors.textSecondary }]}>• Complete tasks in order: big → medium → small</Text>
+        <Text style={[styles.tipItem, { color: colors.textSecondary }]}>• Don't exceed the limits - it defeats the purpose!</Text>
       </View>
     </ScrollView>
   );
